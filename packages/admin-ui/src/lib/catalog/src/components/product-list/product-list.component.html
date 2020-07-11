@@ -84,6 +84,16 @@
                 <vdr-dropdown-menu vdrPosition="bottom-right">
                     <button
                         type="button"
+                        class="duplicate-button"
+                        (click)="duplicateProduct(result.productId)"
+                        [disabled]="!('CreateCatalog' | hasPermission)"
+                        vdrDropdownItem
+                    >
+                        <clr-icon shape="copy"></clr-icon>
+                        {{ 'catalog.duplicate' | translate }}
+                    </button>
+                    <button
+                        type="button"
                         class="delete-button"
                         (click)="deleteProduct(result.productId)"
                         [disabled]="!('DeleteCatalog' | hasPermission)"
