@@ -19,8 +19,8 @@ import {
 import { EMPTY, Observable } from 'rxjs';
 import { delay, map, switchMap, take, takeUntil, withLatestFrom } from 'rxjs/operators';
 
-import { ProductSearchInputComponent } from '../../../../../../package/catalog';
 import { CreateProductInput } from '../../../../core/src/common/generated-types';
+import { ProductSearchInputComponent } from '../product-search-input/product-search-input.component';
 
 @Component({
     selector: 'vdr-products-list',
