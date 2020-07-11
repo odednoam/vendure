@@ -19,7 +19,6 @@ import {
 import { EMPTY, Observable } from 'rxjs';
 import { delay, map, switchMap, take, takeUntil, withLatestFrom } from 'rxjs/operators';
 
-import { CreateProductInput } from '../../../../core/src/common/generated-types';
 import { ProductSearchInputComponent } from '../product-search-input/product-search-input.component';
 
 @Component({
@@ -142,7 +141,7 @@ export class ProductListComponent
         if (oldProduct == null) {
             return;
         }
-        const pi: CreateProductInput = {
+        const pi = {
             featuredAssetId: oldProduct.featuredAsset?.id,
             assetIds: idArray(oldProduct.assets),
             facetValueIds: idArray(oldProduct.facetValues),
