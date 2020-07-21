@@ -466,6 +466,10 @@ export type CreateCountryInput = {
   enabled: Scalars['Boolean'];
 };
 
+export type CreateCustomerCustomFieldsInput = {
+  creditBalance?: Maybe<Scalars['Int']>;
+};
+
 export type CreateCustomerGroupInput = {
   name: Scalars['String'];
   customerIds?: Maybe<Array<Scalars['ID']>>;
@@ -477,7 +481,7 @@ export type CreateCustomerInput = {
   lastName: Scalars['String'];
   phoneNumber?: Maybe<Scalars['String']>;
   emailAddress: Scalars['String'];
-  customFields?: Maybe<Scalars['JSON']>;
+  customFields?: Maybe<CreateCustomerCustomFieldsInput>;
 };
 
 export type CreateFacetInput = {
@@ -951,7 +955,7 @@ export type Customer = Node & {
   addresses?: Maybe<Array<Address>>;
   orders: OrderList;
   user?: Maybe<User>;
-  customFields?: Maybe<Scalars['JSON']>;
+  customFields?: Maybe<CustomerCustomFields>;
 };
 
 
@@ -964,6 +968,11 @@ export type CustomerOrdersArgs = {
   options?: Maybe<OrderListOptions>;
 };
 
+export type CustomerCustomFields = {
+   __typename?: 'CustomerCustomFields';
+  creditBalance?: Maybe<Scalars['Int']>;
+};
+
 export type CustomerFilterParameter = {
   createdAt?: Maybe<DateOperators>;
   updatedAt?: Maybe<DateOperators>;
@@ -972,6 +981,7 @@ export type CustomerFilterParameter = {
   lastName?: Maybe<StringOperators>;
   phoneNumber?: Maybe<StringOperators>;
   emailAddress?: Maybe<StringOperators>;
+  creditBalance?: Maybe<NumberOperators>;
 };
 
 export type CustomerGroup = Node & {
@@ -1036,6 +1046,7 @@ export type CustomerSortParameter = {
   lastName?: Maybe<SortOrder>;
   phoneNumber?: Maybe<SortOrder>;
   emailAddress?: Maybe<SortOrder>;
+  creditBalance?: Maybe<SortOrder>;
 };
 
 export type CustomField = {
@@ -3616,6 +3627,10 @@ export type UpdateCountryInput = {
   enabled?: Maybe<Scalars['Boolean']>;
 };
 
+export type UpdateCustomerCustomFieldsInput = {
+  creditBalance?: Maybe<Scalars['Int']>;
+};
+
 export type UpdateCustomerGroupInput = {
   id: Scalars['ID'];
   name?: Maybe<Scalars['String']>;
@@ -3628,7 +3643,7 @@ export type UpdateCustomerInput = {
   lastName?: Maybe<Scalars['String']>;
   phoneNumber?: Maybe<Scalars['String']>;
   emailAddress?: Maybe<Scalars['String']>;
-  customFields?: Maybe<Scalars['JSON']>;
+  customFields?: Maybe<UpdateCustomerCustomFieldsInput>;
 };
 
 export type UpdateCustomerNoteInput = {
@@ -4304,6 +4319,9 @@ export type GetCustomerListQuery = (
       & { user?: Maybe<(
         { __typename?: 'User' }
         & Pick<User, 'id' | 'verified'>
+      )>, customFields?: Maybe<(
+        { __typename?: 'CustomerCustomFields' }
+        & Pick<CustomerCustomFields, 'creditBalance'>
       )> }
     )> }
   ) }
@@ -6952,6 +6970,7 @@ export namespace GetCustomerList {
   export type Customers = GetCustomerListQuery['customers'];
   export type Items = (NonNullable<GetCustomerListQuery['customers']['items'][0]>);
   export type User = (NonNullable<(NonNullable<GetCustomerListQuery['customers']['items'][0]>)['user']>);
+  export type CustomFields = (NonNullable<(NonNullable<GetCustomerListQuery['customers']['items'][0]>)['customFields']>);
 }
 
 export namespace GetCustomer {

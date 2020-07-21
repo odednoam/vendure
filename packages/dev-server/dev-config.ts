@@ -6,9 +6,8 @@ import {
     DefaultJobQueuePlugin,
     DefaultLogger,
     DefaultSearchPlugin,
-    examplePaymentHandler,
-    LanguageCode,
     LogLevel,
+    storeCreditPaymentHandler,
     VendureConfig,
 } from '@vendure/core';
 import { ElasticsearchPlugin } from '@vendure/elasticsearch-plugin';
@@ -49,9 +48,23 @@ export const devConfig: VendureConfig = {
         ...getDbConfig(),
     },
     paymentOptions: {
-        paymentMethodHandlers: [examplePaymentHandler],
+        paymentMethodHandlers: [storeCreditPaymentHandler],
     },
-    customFields: {},
+    customFields: {
+        Customer: [
+            {
+                name: 'creditBalance',
+                type: 'int',
+                label: [{ value: 'Credit balance', languageCode: 'en' }],
+                description: [{ value: '', languageCode: 'en' }],
+                public: true,
+                internal: false,
+                readonly: false,
+                defaultValue: 0,
+                nullable: false,
+            },
+        ],
+    },
     logger: new DefaultLogger({ level: LogLevel.Info }),
     importExportOptions: {
         importAssetsDir: path.join(__dirname, 'import-assets'),

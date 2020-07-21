@@ -18,6 +18,7 @@ export * from './merge-config';
 export * from './order/order-merge-strategy';
 export * from './order/price-calculation-strategy';
 export * from './payment-method/example-payment-method-handler';
+export * from './payment-method/store-credit-payment-method-handler';
 export * from './payment-method/payment-method-handler';
 export * from './promotion/default-promotion-actions';
 export * from './promotion/default-promotion-conditions';

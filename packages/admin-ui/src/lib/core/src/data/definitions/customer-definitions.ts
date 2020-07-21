@@ -61,6 +61,9 @@ export const GET_CUSTOMER_LIST = gql`
                     id
                     verified
                 }
+                customFields {
+                    creditBalance
+                }
             }
             totalItems
         }
