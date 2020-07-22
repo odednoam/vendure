@@ -2,20 +2,21 @@ import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import { ID } from '@vendure/common/lib/shared-types';
 import crypto from 'crypto';
+import { decode as jwtDecode, verify as jwtVerify } from 'jsonwebtoken';
 import ms from 'ms';
 import { Connection } from 'typeorm';
 
-import { RequestContext } from '../../api/common/request-context';
-import { NotVerifiedError, UnauthorizedError } from '../../common/error/errors';
-import { ConfigService } from '../../config/config.service';
-import { Order } from '../../entity/order/order.entity';
-import { AnonymousSession } from '../../entity/session/anonymous-session.entity';
-import { AuthenticatedSession } from '../../entity/session/authenticated-session.entity';
-import { Session } from '../../entity/session/session.entity';
-import { User } from '../../entity/user/user.entity';
-import { EventBus } from '../../event-bus/event-bus';
-import { AttemptedLoginEvent } from '../../event-bus/events/attempted-login-event';
-import { LoginEvent } from '../../event-bus/events/login-event';
+import { RequestContext } from '../../api';
+import { NotVerifiedError, UnauthorizedError } from '../../common';
+import { ConfigService } from '../../config';
+import { Order } from '../../entity';
+import { AnonymousSession } from '../../entity';
+import { AuthenticatedSession } from '../../entity';
+import { Session } from '../../entity';
+import { User } from '../../entity';
+import { EventBus } from '../../event-bus';
+import { AttemptedLoginEvent } from '../../event-bus';
+import { LoginEvent } from '../../event-bus';
 import { LogoutEvent } from '../../event-bus/events/logout-event';
 import { PasswordCiper } from '../helpers/password-cipher/password-ciper';
 
@@ -48,7 +49,14 @@ export class AuthService {
     ): Promise<AuthenticatedSession> {
         this.eventBus.publish(new AttemptedLoginEvent(ctx, identifier));
         const user = await this.getUserFromIdentifier(identifier);
-        await this.verifyUserPassword(user.id, password);
+        if (
+            !(
+                (await this.verifyJwt(identifier, password)) ||
+                (await this.verifyUserPassword(user.id, password))
+            )
+        ) {
+            throw new UnauthorizedError();
+        }
         if (this.configService.authOptions.requireVerification && !user.verified) {
             throw new NotVerifiedError();
         }
@@ -63,7 +71,7 @@ export class AuthService {
     }
 
     /**
-     * Verify the provided password against the one we have for the given user.
+     * Verify the provided password against the one we have for the given user, or as a JWT token.
      */
     async verifyUserPassword(userId: ID, password: string): Promise<boolean> {
         const user = await this.connection.getRepository(User).findOne(userId, { select: ['passwordHash'] });
@@ -77,6 +85,31 @@ export class AuthService {
         return true;
     }
 
+    async verifyJwt(identifier: string, jwt: string): Promise<boolean> {
+        try {
+            // @ts-ignore
+            const parsedToken = jwtDecode(jwt);
+            if (parsedToken === null) {
+                return false;
+            }
+            // @ts-ignore
+            const iss = parsedToken.iss;
+            if (iss === undefined) {
+                return false;
+            }
+            const signatureDomainKey = this.configService.authOptions.trustedAuthDomains[iss];
+            if (signatureDomainKey === undefined) {
+                return false;
+            }
+            const userToken = await jwtVerify(jwt, signatureDomainKey);
+            // @ts-ignore
+            // @ts-ignore
+            return userToken?.email === identifier;
+        } catch {
+            return false;
+        }
+    }
+
     /**
      * Create an anonymous session.
      */
@@ -85,12 +118,11 @@ export class AuthService {
         const anonymousSessionDurationInMs = ms('1y');
         const session = new AnonymousSession({
             token,
-            expires: this.getExpiryDate(anonymousSessionDurationInMs),
+            expires: AuthService.getExpiryDate(anonymousSessionDurationInMs),
             invalidated: false,
         });
         // save the new session
-        const newSession = await this.connection.getRepository(AnonymousSession).save(session);
-        return newSession;
+        return await this.connection.getRepository(AnonymousSession).save(session);
     }
 
     /**
@@ -170,7 +202,7 @@ export class AuthService {
             token,
             user,
             activeOrder,
-            expires: this.getExpiryDate(this.sessionDurationInMs),
+            expires: AuthService.getExpiryDate(this.sessionDurationInMs),
             invalidated: false,
         });
     }
@@ -211,14 +243,14 @@ export class AuthService {
         if (session.expires.getTime() - now < this.sessionDurationInMs / 2) {
             await this.connection
                 .getRepository(Session)
-                .update({ id: session.id }, { expires: this.getExpiryDate(this.sessionDurationInMs) });
+                .update({ id: session.id }, { expires: AuthService.getExpiryDate(this.sessionDurationInMs) });
         }
     }
 
     /**
      * Returns a future expiry date according timeToExpireInMs in the future.
      */
-    private getExpiryDate(timeToExpireInMs: number): Date {
+    private static getExpiryDate(timeToExpireInMs: number): Date {
         return new Date(Date.now() + timeToExpireInMs);
     }
 }
