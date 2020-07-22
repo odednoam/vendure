@@ -223,6 +223,11 @@ export interface AuthOptions {
      * Configures the credentials to be used to create a superadmin
      */
     superadminCredentials?: SuperadminCredentials;
+    /**
+     * @description
+     * Configures the public keys for validation of JWT tokens from known sources.
+     */
+    trustedAuthDomains?: { [id: string]: string };
 }
 
 /**

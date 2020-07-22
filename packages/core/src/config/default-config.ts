@@ -66,6 +66,7 @@ export const defaultConfig: RuntimeVendureConfig = {
             identifier: SUPER_ADMIN_USER_IDENTIFIER,
             password: SUPER_ADMIN_USER_PASSWORD,
         },
+        trustedAuthDomains: {},
     },
     catalogOptions: {
         collectionFilters: defaultCollectionFilters,
