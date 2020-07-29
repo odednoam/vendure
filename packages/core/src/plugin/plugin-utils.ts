@@ -39,7 +39,7 @@ export function createProxyHandler(options: ProxyOptions): RequestHandler {
     const proxyHostname = options.hostname || 'localhost';
     const middleware = createProxyMiddleware({
         // TODO: how do we detect https?
-        target: `http://${proxyHostname}:${options.port}`,
+        target: `//${proxyHostname}:${options.port}`,
         pathRewrite: {
             [`^${route}`]: `/` + (options.basePath || ''),
         },
