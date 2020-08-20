@@ -47,6 +47,7 @@ export const defaultConfig: RuntimeVendureConfig = {
         shopApiPlayground: false,
         shopApiDebug: false,
         channelTokenKey: 'vendure-token',
+        channelTokenByReferer: {},
         cors: {
             origin: true,
             credentials: true,

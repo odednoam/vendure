@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { LanguageCode, Permission } from '@vendure/common/lib/generated-types';
 import { Request } from 'express';
 import { GraphQLResolveInfo } from 'graphql';
+import { URL } from 'url';
 
 import { idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
@@ -62,6 +63,13 @@ export class RequestContextService {
         } else if (req && req.headers && req.headers[tokenKey]) {
             channelToken = req.headers[tokenKey] as string;
         }
+
+        if (!channelToken && this.configService.apiOptions.channelTokenByReferer) {
+            if (req.headers.referer) {
+                const refererUrl = new URL(req.headers.referer);
+                channelToken = this.configService.apiOptions.channelTokenByReferer[refererUrl.hostname];
+            }
+        }
         return channelToken;
     }
 
@@ -86,7 +94,7 @@ export class RequestContextService {
             return false;
         }
         const permissionsOnChannel = user.roles
-            .filter(role => role.channels.find(c => idsAreEqual(c.id, channel.id)))
+            .filter((role) => role.channels.find((c) => idsAreEqual(c.id, channel.id)))
             .reduce((output, role) => [...output, ...role.permissions], [] as Permission[]);
         return this.arraysIntersect(permissions, permissionsOnChannel);
     }

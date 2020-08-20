@@ -107,6 +107,15 @@ export interface ApiOptions {
      * @default 'vendure-token'
      */
     channelTokenKey?: string;
+
+    /**
+     * @description
+     * A map of referer hostnames with associated token keys.
+     *
+     * @default '{}'
+     */
+    channelTokenByReferer?: { [refererHostname: string]: string };
+
     /**
      * @description
      * Set the CORS handling for the server. See the [express CORS docs](https://github.com/expressjs/cors#configuration-options).
