@@ -67,7 +67,10 @@ export class RequestContextService {
         if (!channelToken && this.configService.apiOptions.channelTokenByReferer) {
             if (req.headers.referer) {
                 const refererUrl = new URL(req.headers.referer);
-                channelToken = this.configService.apiOptions.channelTokenByReferer[refererUrl.hostname];
+                const refererToken = this.configService.apiOptions.channelTokenByReferer[refererUrl.hostname];
+                if (refererToken) {
+                    channelToken = refererToken;
+                }
             }
         }
         return channelToken;
