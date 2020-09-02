@@ -7,7 +7,7 @@ import {
     VendurePlugin,
 } from '@vendure/core';
 import { OrderState } from '@vendure/core/dist/service/helpers/order-state-machine/order-state';
-import * as fetch from 'node-fetch';
+import fetch from 'node-fetch';
 
 @VendurePlugin({
     imports: [PluginCommonModule],
@@ -48,11 +48,11 @@ export class PrintfulOrdersPlugin implements OnVendureBootstrap {
                             return {
                                 sync_variant_id: line.productVariant.sku.substring(4),
                                 quantity: line.quantity,
-                                retail_price: line.unitPriceWithTax,
+                                retail_price: line.unitPriceWithTax / 100.0,
                             };
                         }),
                 };
-                const res = await fetch.fetch('https://api.printful.com/orders',
+                const res = await fetch('https://api.printful.com/orders',
                     {
                         method: 'POST',
                         body: JSON.stringify(newOrder),
