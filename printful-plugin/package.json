@@ -1,0 +1,9 @@
+{
+  "name": "printful-plugin",
+  "version": "1.0.0",
+  "main": "src/index.js",
+  "types": "src/index.d.ts",
+  "dependencies": {
+    "node-fetch": "^2.6.0"
+  }
+}
