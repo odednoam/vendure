@@ -51,6 +51,9 @@ export class PrintfulOrdersPlugin implements OnVendureBootstrap {
                                 retail_price: line.unitPriceWithTax / 100.0,
                             };
                         }),
+                    retail_costs: {
+                        shipping: event.order.shippingWithTax,
+                    },
                 };
                 const res = await fetch('https://api.printful.com/orders',
                     {
