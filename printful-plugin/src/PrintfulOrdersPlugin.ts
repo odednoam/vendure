@@ -30,7 +30,7 @@ export class PrintfulOrdersPlugin implements OnVendureBootstrap {
                 console.log(event);
                 const newOrder = {
                     external_id: event.order.code,
-                    shipping: event.order.shippingMethod.code,
+                    shipping: event.order.shippingMethod?.code,
                     recipient: {
                         name: event.order.shippingAddress.fullName,
                         address1: event.order.shippingAddress.streetLine1,
