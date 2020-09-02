@@ -29,6 +29,8 @@ export class PrintfulOrdersPlugin implements OnVendureBootstrap {
             if (event.toState === 'PaymentSettled') {
                 console.log(event);
                 const newOrder = {
+                    external_id: event.order.code,
+                    shipping: event.order.shippingMethod.code,
                     recipient: {
                         name: event.order.shippingAddress.fullName,
                         address1: event.order.shippingAddress.streetLine1,
@@ -52,7 +54,7 @@ export class PrintfulOrdersPlugin implements OnVendureBootstrap {
                             };
                         }),
                     retail_costs: {
-                        shipping: event.order.shippingWithTax,
+                        shipping: event.order.shippingWithTax / 100.0,
                     },
                 };
                 const res = await fetch('https://api.printful.com/orders',
