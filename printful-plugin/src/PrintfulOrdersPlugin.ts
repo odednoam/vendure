@@ -5,7 +5,7 @@ import {
     OnVendureBootstrap, OrderLine,
     OrderStateTransitionEvent, orderStateTransitions, PluginCommonModule,
     VendurePlugin,
-} from '@vendure/csore';
+} from '@vendure/core';
 import { OrderState } from '@vendure/core/dist/service/helpers/order-state-machine/order-state';
 import fetch from 'node-fetch';
 
@@ -57,9 +57,9 @@ export class PrintfulOrdersPlugin implements OnVendureBootstrap {
                         shipping: event.order.shippingWithTax / 100.0,
                     },
                 };
-                cosnole.log("Event of channel", event.ctx.channel());
-                const key = this.printfulApiKey[event.ctx.channel().token];
-                cosnole.log("Using API key", key);
+                console.log("Event of channel", event.ctx.channel);
+                const key = PrintfulOrdersPlugin.printfulApiKey[event.ctx.channel.token];
+                console.log("Using API key", key);
                 const res = await fetch('https://api.printful.com/orders',
                     {
                         method: 'POST',
